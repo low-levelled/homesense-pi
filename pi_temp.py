@@ -1,5 +1,12 @@
 import os
+import platform
 import requests
+
+def get_machine_info():
+    """Returns a formatted string with machine and OS info."""
+    machine_name = platform.node()
+    os_name = f"{platform.system()} {platform.release()}"
+    return f"📟 Machine: {machine_name} ({os_name})"
 
 def read_temp():
     try:
@@ -16,12 +23,12 @@ def read_temp():
                 status = "Heavy Load"
             else:
                 status = "Danger: Throttling Likely"
-            return (f"CPU Temperature: {celsius:.2f} C | {farenheit:.2f} F - Status: {status}")
+                
+            return f"🌡️  CPU Temperature: {celsius:.2f}°C | {farenheit:.2f}°F — Status: {status}"
         
     except Exception as e:
-        return (f"Failed to read temperature: {e}")
-    
-    
+        return f"⚠️  Failed to read temperature: {e}"
+
 def get_location_coords():
     try:
         response = requests.get("https://ipinfo.io/json", timeout=5)
@@ -32,8 +39,8 @@ def get_location_coords():
         return lat, lon, city
     except Exception as e:
         print(f"Error getting location: {e}")
-        return None, None
-    
+        return None, None, None
+
 def get_local_weather():
     lat, lon, city = get_location_coords()
     if lat is None:
@@ -46,11 +53,11 @@ def get_local_weather():
         celsius = data["current_weather"]["temperature"]
         farenheit = (celsius * 9/5) + 32
         wind = data["current_weather"]["windspeed"]
-        return f"{city} Local weather: {farenheit}*F, Wind: {wind} km/hr (lat: {lat}, lon: {lon})"
+        return f"🌤️  {city} Local Weather: {farenheit:.1f}°F, Wind: {wind} km/hr (lat: {lat}, lon: {lon})"
     except Exception as e:
         return f"Failed to get weather: {e}"
 
-        
-if __name__ == "__main__" :
+if __name__ == "__main__":
+    print(get_machine_info())
     print(read_temp())
     print(get_local_weather())
